@@ -41,6 +41,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "apps.opportunities.apps.OpportunitiesConfig",
     "apps.evidence.apps.EvidenceConfig",
     "apps.accounts.apps.AccountsConfig",
     "apps.skills.apps.SkillsConfig",
