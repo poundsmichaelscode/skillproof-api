@@ -23,7 +23,8 @@ Request:
 {
   "username": "learner1",
   "email": "learner@example.com",
-  "password": "StrongPassword123!"
+  "password": "StrongPassword123!",
+  "password_confirm": "StrongPassword123!"
 }
 
 Success: 201 Created
@@ -100,7 +101,7 @@ Requires authentication.
 
 Returns the authenticated user's skills.
 
-Supports pagination.
+Pagination is planned for Week 3.
 
 Query parameters:
 - page
@@ -154,7 +155,7 @@ Requires authentication.
 
 Lists only the authenticated user's evidence.
 
-Supports pagination and optional skill filtering.
+Pagination and skill filtering are planned for Week 3.
 
 ### POST /api/v1/evidence/
 
@@ -200,7 +201,7 @@ Requires authentication.
 
 All authenticated users can browse opportunities.
 
-Supports pagination.
+Pagination is planned for Week 3.
 
 ### POST /api/v1/opportunities/
 
@@ -309,7 +310,7 @@ permission to perform the operation.
 
 429 Too Many Requests: Request throttled.
 
-500 Internal Server Error: Unexpected server failure.
+500 Internal Server Error: Unexpected server failure (handled by Django outside the DRF exception handler).
 
 ## 10. Error Response Format
 
@@ -341,9 +342,9 @@ in production responses.
 
 ## 11. Pagination
 
-Default page size: 20
+Planned default page size: 20 (not enabled in Week 2)
 
-Maximum page size: 100
+Planned maximum page size: 100 (not enabled in Week 2)
 
 Example:
 GET /api/v1/skills/?page=1&page_size=20
@@ -377,7 +378,14 @@ Response:
 
 This document defines the planned API contract.
 
-Endpoints are not implemented yet.
+Week 2 implementation includes registration, JWT obtain/refresh, user profile,
+Skill CRUD, Evidence CRUD, Opportunity CRUD, and health check.
 
-Request and response formats will be verified
-against the running API during development.
+The standardized DRF-handled API error envelope is implemented in
+`config/exceptions.py`. Authentication and permissions are covered by
+regression tests. The current API has **no global pagination configuration**,
+so list endpoints return plain arrays; pagination, filtering, throttling,
+and production hardening are planned for Week 3.
+
+The pagination section above represents the **planned Week 3 contract**,
+not currently active behavior. See `docs/sample-requests.md` for examples.

@@ -1,150 +1,64 @@
-# SkillProof API — Entity Relationship Diagram
+# SkillProof API — Week 2 Entity Relationship Diagram
 
-## Overview
-
-This document describes the proposed database
-relationships for the SkillProof API MVP.
-
-The database contains four primary entities:
-
-- User
-- Skill
-- Evidence
-- Opportunity
-
-## Entity Relationship Diagram
+The following Mermaid diagram depicts the **implemented** Django data models. It renders directly in GitHub Markdown and can be used in a mentor presentation.
 
 ```mermaid
 erDiagram
     USER ||--o{ SKILL : owns
     USER ||--o{ EVIDENCE : owns
-    USER ||--o{ OPPORTUNITY : creates
-    SKILL ||--o{ EVIDENCE : contains
+    USER ||--o{ OPPORTUNITY : publishes
+    SKILL ||--o{ EVIDENCE : proves
 
     USER {
-        int id PK
+        bigint id PK
         string username UK
-        string email
-        string password_hash
+        string email "validated in application"
+        string password "hashed"
+        string first_name
+        string last_name
         datetime date_joined
     }
-
     SKILL {
-        int id PK
-        int owner_id FK
-        string name
-        string proficiency
+        bigint id PK
+        bigint owner_id FK
+        string name "max 150; unique per owner ignoring case"
+        string proficiency "beginner | intermediate | advanced"
         text description
         datetime created_at
         datetime updated_at
     }
-
     EVIDENCE {
-        int id PK
-        int owner_id FK
-        int skill_id FK
-        string title
+        bigint id PK
+        bigint owner_id FK
+        bigint skill_id FK
+        string title "max 200"
         text description
         string evidence_url
         datetime created_at
         datetime updated_at
     }
-
     OPPORTUNITY {
-        int id PK
-        int owner_id FK
-        string title
-        string organization
+        bigint id PK
+        bigint owner_id FK
+        string title "max 200"
+        string organization "max 200"
         text description
         string application_url
-        date closing_date
+        date closing_date "optional"
         datetime created_at
         datetime updated_at
     }
 ```
 
-## Relationship Definitions
+## Relations and safeguards
 
-### User to Skill
+| Relationship | Cardinality | Delete behavior | API rule |
+| --- | --- | --- | --- |
+| User → Skill | One-to-many | CASCADE | Owner-only list and detail operations |
+| User → Evidence | One-to-many | CASCADE | Owner-only CRUD; client cannot override owner |
+| Skill → Evidence | One-to-many | CASCADE | Evidence may reference only the owner's Skill |
+| User → Opportunity | One-to-many | CASCADE | Authenticated read; owner/staff edit and delete |
 
-Relationship: One-to-Many
+**Important implementation details:** Email uniqueness is checked at the serializer level, not yet with a database unique constraint. Evidence `owner_id = skill.owner_id` is checked in model/serializer paths, not enforced as a cross-table database constraint. Both are recorded in the security review.
 
-A user can own multiple skills.
-Each skill belongs to exactly one user.
-
-Foreign Key:
-Skill.owner_id -> User.id
-
-Deletion:
-CASCADE
-
-### User to Evidence
-
-Relationship: One-to-Many
-
-A user can own multiple evidence records.
-Each evidence record belongs to one user.
-
-Foreign Key:
-Evidence.owner_id -> User.id
-
-Deletion:
-CASCADE
-
-### Skill to Evidence
-
-Relationship: One-to-Many
-
-A skill can have multiple evidence records.
-Each evidence record references one skill.
-
-Foreign Key:
-Evidence.skill_id -> Skill.id
-
-Deletion:
-CASCADE
-
-### User to Opportunity
-
-Relationship: One-to-Many
-
-A user can create multiple opportunities.
-Each opportunity has one owner.
-
-Foreign Key:
-Opportunity.owner_id -> User.id
-
-Deletion:
-CASCADE
-
-## Ownership Constraints
-
-1. Skill ownership is assigned server-side.
-2. Evidence ownership is assigned server-side.
-3. Evidence.skill must belong to Evidence.owner.
-4. Users cannot modify another user's skills.
-5. Users cannot access another user's private evidence.
-6. Only opportunity owners or authorized administrators
-   can modify or delete opportunities.
-
-## Database Design Notes
-
-- Django's built-in User model is used.
-- Primary keys use integer identifiers.
-- Foreign keys enforce referential integrity.
-- Related records use cascading deletion.
-- Skill names will be normalized for uniqueness
-  within each user's records.
-- Evidence uses URLs instead of file uploads.
-- Application validation enforces matching ownership.
-- Database-level constraints will be added where
-  practical during model implementation.
-
-## Future Considerations
-
-- Soft deletion instead of cascading deletion.
-- Public skill portfolios.
-- Opportunity filtering and searching.
-- Additional indexes based on query performance.
-
-These are outside the initial MVP scope.
+See [architecture.md](architecture.md) for the API flow and [week-2-security-review.md](week-2-security-review.md) for the six known risks.
