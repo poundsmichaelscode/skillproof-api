@@ -1,8 +1,8 @@
 # Week 2 — Backend Development — SkillProof API
 
-**Track:** Backend Development  
-**Repository:** https://github.com/poundsmichaelscode/skillproof-api  
-**Tag:** `week-2` (create only after all final checks pass)  
+**Track:** Backend Development
+**Repository:** https://github.com/poundsmichaelscode/skillproof-api
+**Tag:** `week-2` (create only after all final checks pass)
 **Run guide:** repository `README.md` (local Django and PostgreSQL Compose setup)
 
 ## Delivered
