@@ -30,3 +30,9 @@ db.sqlite3
 # Build artifacts
 build/
 dist/
+
+# Coverage reports
+.coverage
+.coverage.*
+htmlcov/
+reports/

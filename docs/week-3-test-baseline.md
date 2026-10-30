@@ -30,3 +30,20 @@ and production configuration require additional testing.
 - Verify 400, 401, 403, 404, and 405 responses
 - Add CI execution
 - Test containerized deployment
+
+## Measured Coverage
+
+Coverage measured using coverage.py and the Django test runner.
+
+The coverage command is:
+
+```bash
+python -m coverage run --source=apps,config \
+  --omit="*/migrations/*,*/tests.py,*/test_*.py,*/test_*/test_*.py,*/manage.py" \
+  manage.py test -v 1
+
+python -m coverage report -m
+```
+
+The latest measured percentage and uncovered lines
+are available from the generated coverage report.
