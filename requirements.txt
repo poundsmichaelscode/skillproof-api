@@ -10,3 +10,5 @@ sqlparse==0.6.0
 coverage==7.17.0
 drf-spectacular==0.30.0
 drf-spectacular-sidecar==2026.10.1
+gunicorn==26.2.0
+whitenoise==6.12.0

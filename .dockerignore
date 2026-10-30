@@ -1,0 +1,15 @@
+.git
+.github
+.venv
+venv
+.env
+.env.*
+!.env.example
+__pycache__
+*.pyc
+.coverage
+htmlcov
+reports
+*.log
+.DS_Store
+staticfiles/

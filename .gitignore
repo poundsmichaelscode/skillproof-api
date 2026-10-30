@@ -36,3 +36,6 @@ dist/
 .coverage.*
 htmlcov/
 reports/
+
+# Django collected static assets
+staticfiles/
