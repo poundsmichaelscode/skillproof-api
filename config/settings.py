@@ -148,6 +148,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Django REST Framework authentication
 REST_FRAMEWORK = {
+    "DEFAULT_THROTTLE_RATES": {
+        "auth_register": "5/hour",
+        "auth_login": "10/minute",
+        "auth_refresh": "20/minute",
+    },
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "config.exceptions.api_exception_handler",
     "DEFAULT_AUTHENTICATION_CLASSES": [
