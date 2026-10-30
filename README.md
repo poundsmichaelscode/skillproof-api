@@ -1,216 +1,221 @@
 # SkillProof API
 
-**A Django REST Framework backend for tracking technical skills, recording evidence of work, and organizing career opportunities.**
+A secure, tested Django REST Framework API for managing
+technical skills, evidence of practical work, and career
+opportunities.
 
-> **Status:** Week 1 — Architecture and Core CRUD — completed on 16 October 2026. The `week-1` Git tag preserves the original submission snapshot. This README documents the Week 1 implementation; features planned for later weeks are clearly identified.
+**Developer:** Olayenikan Michael
+
+**Repository:** https://github.com/poundsmichaelscode/skillproof-api
 
 ## Project overview
 
-SkillProof API helps students, self-taught developers, and early-career professionals organize technical skills in one place. The broader project will also connect skills to evidence such as projects and certifications, and support career opportunity tracking.
+SkillProof helps developers and learners document their
+skills, attach evidence of completed work, and organize
+career opportunities.
 
-The first week's deliverable is a functional Django/PostgreSQL foundation with protected Skill CRUD operations, validation, documentation, and automated tests.
-
-## Week 1 deliverables
-
-- Documented the project idea, three-week plan, database model, ERD, and REST API contract.
-- Initialized Django 5.2 and Django REST Framework.
-- Configured PostgreSQL 17 through Docker Compose with persistent storage and environment variables.
-- Added `GET /api/v1/health/` as a public application-liveness endpoint.
-- Implemented a `Skill` model with a user owner, name, description, proficiency, and timestamps.
-- Applied `skills.0001_initial` and verified the PostgreSQL schema.
-- Enforced case-insensitive uniqueness of skill names per user in PostgreSQL.
-- Built the Skill serializer with input validation.
-- Implemented authenticated Skill list, create, retrieve, update, and delete operations.
-- Restricted Skill queries to the authenticated owner, assigning ownership on the server.
-- Passed **25 automated tests** across health checks, models, serializers, CRUD operations, and cross-user restrictions.
-- Pushed the annotated **`week-1`** Git tag.
+The project was built over three weeks, progressing from
+core CRUD functionality to authentication, API security,
+documentation, automated testing, and Docker deployment.
 
 ## Technology stack
 
-| Component | Technology |
-| --- | --- |
-| Language | Python (3.14 used in development) |
-| Framework | Django 5.2.18 |
-| REST APIs | Django REST Framework 3.18.3 |
-| Database | PostgreSQL 17 |
-| Driver | psycopg 3 |
-| Configuration | `python-dotenv` and `.env` |
-| Containers | Docker and Docker Compose |
-| Testing | Django test runner and DRF `APIClient` |
-| Version control | Git and GitHub |
+- Python 3.14
+- Django 5.2
+- Django REST Framework
+- PostgreSQL 17
+- SimpleJWT
+- drf-spectacular (OpenAPI, Swagger, ReDoc)
+- Docker and Docker Compose
+- Gunicorn
+- WhiteNoise
+- GitHub Actions
 
-## Repository structure
+## Features
 
-```text
-skillproof-api/
-├── apps/
-│   └── skills/
-│       ├── migrations/
-│       ├── test_api/
-│       ├── test_serializers/
-│       ├── models.py
-│       ├── serializers.py
-│       ├── urls.py
-│       ├── views.py
-│       └── tests.py
-├── config/
-│   ├── settings.py
-│   ├── urls.py
-│   ├── views.py
-│   └── tests.py
-├── docs/
-│   ├── idea-one-pager.md
-│   ├── work-plan.md
-│   ├── data-model.md
-│   ├── erd.md
-│   ├── api-spec.md
-│   └── sample-requests.md
-├── .env.example
-├── compose.yaml
-├── manage.py
-└── requirements.txt
-```
+### Authentication
+- User registration
+- JWT access and refresh tokens
+- User profile retrieval and update
+- Password validation
+- Authentication rate limiting
 
-## Running locally
+### Skills
+- Create, list, retrieve, update, and delete skills
+- Per-user ownership enforcement
+- Case-insensitive skill-name uniqueness
+- Proficiency tracking
 
-**Prerequisites:** Git, a compatible Python installation, Docker Desktop (running), and Docker Compose.
+### Evidence
+- Create and manage skill evidence
+- Associate evidence with owned skills
+- Owner-filtered access
 
-### 1. Clone the repository and install dependencies
+### Opportunities
+- Create and manage career opportunities
+- Authenticated listing
+- Owner/admin modification permissions
+
+### API reliability
+- Standardized error responses
+- Page-number pagination
+- PostgreSQL query indexes
+- OpenAPI schema and interactive documentation
+- Automated tests and GitHub Actions CI
+
+## Quick start with Docker
+
+Requirements:
+- Docker Desktop or Docker Engine with Compose
+- Git
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/poundsmichaelscode/skillproof-api.git
 cd skillproof-api
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-```
-
-### 2. Configure environment variables
-
-```bash
 cp .env.example .env
 ```
 
-Edit `.env` to replace the Django secret and PostgreSQL password placeholders with **new, strong, different** secrets. Do not commit `.env`. To generate a random secret without dollar signs:
+Replace the placeholder secrets in .env with unique,
+strong values before starting the containers.
+
+Start PostgreSQL and the Django API:
 
 ```bash
-python -c 'import secrets; print(secrets.token_hex(32))'
+docker compose --env-file .env up -d --build
 ```
 
-Set `DJANGO_SECRET_KEY` and `POSTGRES_PASSWORD` to separate generated values. The default development configuration uses `skillproof_db`, `skillproof_user`, and PostgreSQL at `127.0.0.1:5433`. The container itself listens on port 5432. If changing credentials after the database volume has been initialized, account for the existing database user/password; environment changes alone do not reset that stored role.
-
-### 3. Start PostgreSQL
+Apply database migrations:
 
 ```bash
-docker compose --env-file .env up -d db
+docker compose --env-file .env exec -T api \
+  python manage.py migrate
+```
+
+Check container status:
+
+```bash
 docker compose --env-file .env ps
 ```
 
-Docker Compose currently starts the **database only**; Django runs on the host.
+The local API is available at:
 
-### 4. Apply migrations and start the API
+http://127.0.0.1:8002
 
-```bash
-python manage.py check
-python manage.py migrate
-python manage.py runserver 127.0.0.1:8000
-```
+## API endpoints
 
-## Implemented endpoints — Week 1
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | /api/v1/health/ | Public health check |
+| POST | /api/v1/auth/register/ | Register user |
+| POST | /api/v1/auth/token/ | Obtain JWT tokens |
+| POST | /api/v1/auth/token/refresh/ | Refresh token |
+| GET, PATCH | /api/v1/auth/me/ | Current user profile |
+| GET, POST | /api/v1/skills/ | List or create skills |
+| GET, PUT, PATCH, DELETE | /api/v1/skills/{id}/ | Manage a skill |
+| GET, POST | /api/v1/evidence/ | List or create evidence |
+| GET, PUT, PATCH, DELETE | /api/v1/evidence/{id}/ | Manage evidence |
+| GET, POST | /api/v1/opportunities/ | List or create opportunities |
+| GET, PUT, PATCH, DELETE | /api/v1/opportunities/{id}/ | Manage opportunity |
 
-Base URL: `http://127.0.0.1:8000/api/v1`
+## API documentation
 
-| Method | Route | Access | Purpose |
-| --- | --- | --- | --- |
-| GET | `/health/` | Public | Application liveness check |
-| GET | `/skills/` | Authenticated | List the current user's skills |
-| POST | `/skills/` | Authenticated | Create a skill |
-| GET | `/skills/{id}/` | Authenticated owner | Retrieve an owned skill |
-| PUT / PATCH | `/skills/{id}/` | Authenticated owner | Update an owned skill |
-| DELETE | `/skills/{id}/` | Authenticated owner | Delete an owned skill |
+- OpenAPI: /api/schema/
+- Swagger UI: /api/docs/
+- ReDoc: /api/redoc/
 
-### Health check
+Local Swagger URL:
 
-```bash
-curl -i http://127.0.0.1:8000/api/v1/health/
-```
+http://127.0.0.1:8002/api/docs/
 
-Expected JSON response:
+## Pagination
 
-```json
-{"status":"ok"}
-```
+List endpoints support:
 
-The health endpoint checks application liveness, not database readiness.
+- page
+- page_size
 
-### Example Skill request body
+Default page size: 20
+Maximum page size: 100
 
-```json
-{
-  "name": "Python",
-  "description": "Backend API development",
-  "proficiency": "intermediate"
-}
-```
+## Authentication rate limits
 
-Valid proficiency values: `beginner`, `intermediate`, `advanced`. The owner is determined by `request.user`; it cannot be assigned through submitted JSON. Names are trimmed, and duplicate skill names for the same owner are rejected case-insensitively.
+| Endpoint | Limit |
+| --- | --- |
+| Registration | 5/hour |
+| Login | 10/minute |
+| Token refresh | 20/minute |
 
-**Authentication status:** Week 1 Skill endpoints use DRF `IsAuthenticated`, and tests authenticate users using `APIClient.force_authenticate()`. Public registration and JWT login/refresh endpoints are **not part of the Week 1 release**. See [sample requests](docs/sample-requests.md) for additional request examples and [API specification](docs/api-spec.md) for the **planned** complete API contract.
+Requests exceeding configured limits receive HTTP 429.
 
 ## Testing
 
-Start PostgreSQL before running database-backed tests, then execute:
+Run locally after activating the Python environment:
 
 ```bash
 python manage.py check
-python manage.py test -v 2
+python manage.py test -v 1
 python manage.py makemigrations --check --dry-run
-python manage.py migrate --check
+python manage.py spectacular \
+  --validate --fail-on-warn \
+  --file /tmp/skillproof-openapi.yaml
 ```
 
-**Week 1 checkpoint:** 25 tests passed. They cover the health endpoint, Skill model constraints and ownership, serializer validation, Skill CRUD, and cross-user access protection. Django creates a separate temporary test database instead of writing test records into the development database.
+Latest verified local result: 114 tests passed.
 
-## Security implemented so far
+GitHub Actions runs the tests with PostgreSQL, validates
+migrations and OpenAPI, and builds the Docker image.
 
-- Application and database credentials are read from environment variables.
-- The `.env` file must never be committed.
-- Skill resources require authentication.
-- Skill queries are restricted by user ownership.
-- Skill owners are assigned by the server, not accepted from clients.
-- PostgreSQL enforces case-insensitive uniqueness per owner.
+## Project milestones
 
-**Not yet implemented in Week 1:** JWT login, registration, Evidence and Opportunity endpoints, throttling, full OpenAPI documentation, production HTTPS/deployment, and CI. These are covered by later milestones.
-
-## Three-week roadmap
-
-| Week | Focus | Status |
+| Week | Deliverable | Status |
 | --- | --- | --- |
-| **Week 1** | Architecture, Django/PostgreSQL setup, health check, Skill CRUD and tests | **Completed — `week-1` tag** |
-| **Week 2** | User registration, JWT, profile, Evidence, Opportunities, permissions and failure tests | Planned / underway |
-| **Week 3** | Expanded tests, OpenAPI/Swagger, CI, production hardening, Dockerized API and final documentation | Planned |
+| 1 | Architecture, PostgreSQL, Skill CRUD | Complete |
+| 2 | JWT, relationships, permissions, error handling | Complete |
+| 3 | Tests, API docs, performance, Docker, CI | Complete |
 
-## Project documentation
+Historical Git tags:
+- week-1
+- week-2
+- week-2-final
 
-- [Project overview](docs/idea-one-pager.md)
-- [Three-week work plan](docs/work-plan.md)
+The week-3 tag is created after final verification.
+
+## Deployment limitations
+
+The project has been verified using local Docker Compose.
+It has not been demonstrated as a publicly hosted service.
+
+Before public production deployment, configure HTTPS,
+a trusted reverse proxy, a shared throttling cache,
+monitoring, backups, and additional security testing.
+
+## Documentation
+
+- [Work plan](docs/work-plan.md)
 - [Data model](docs/data-model.md)
 - [ERD](docs/erd.md)
-- [REST API specification — planned contract](docs/api-spec.md)
-- [Sample API requests](docs/sample-requests.md)
+- [API specification](docs/api-spec.md)
+- [Performance review](docs/week-3-performance.md)
+- [Security review](docs/week-3-security.md)
+- [Week 3 submission](docs/week-3-submission.md)
+- [Deployment guide](docs/deployment-guide.md)
+- [Technical reflection](docs/technical-reflection.md)
 
-## Week 1 submission
+## AI disclosure
 
-- **Repository:** https://github.com/poundsmichaelscode/skillproof-api
-- **Week 1 snapshot:** https://github.com/poundsmichaelscode/skillproof-api/tree/week-1
-- **Tag:** `week-1`
+AI tools assisted with planning, coding suggestions,
+troubleshooting, and documentation.
 
-The `week-1` tag was created before this README; the README is an additional documentation commit on `main`, and the original tagged snapshot remains unchanged.
+Implementation was validated through local testing,
+Docker execution, and GitHub Actions.
 
 ## Author
 
-**Olayenikan Michael**  
+Olayenikan Michael
 GitHub: https://github.com/poundsmichaelscode
 
 ## License
 
-No license has been declared for this repository. Usage and redistribution rights have not been granted through a license file.
+No license has been declared for this repository.
