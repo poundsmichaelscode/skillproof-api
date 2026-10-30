@@ -1,0 +1,75 @@
+name: SkillProof CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Django Tests and Docker Build
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: skillproof_ci
+          POSTGRES_USER: skillproof_ci
+          POSTGRES_PASSWORD: ci-test-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U skillproof_ci -d skillproof_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DJANGO_SECRET_KEY: ci-only-test-secret-not-for-production
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: 127.0.0.1,localhost
+      POSTGRES_DB: skillproof_ci
+      POSTGRES_USER: skillproof_ci
+      POSTGRES_PASSWORD: ci-test-password
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5432"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip check
+
+      - name: Django system check
+        run: python manage.py check
+
+      - name: Check migrations
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run automated tests
+        run: python manage.py test -v 1
+
+      - name: Validate OpenAPI schema
+        run: |
+          python manage.py spectacular \
+            --validate \
+            --fail-on-warn \
+            --file /tmp/skillproof-openapi.yaml
+
+      - name: Build Docker image
+        run: docker build -t skillproof-api:ci .
