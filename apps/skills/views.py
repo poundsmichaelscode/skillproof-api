@@ -5,6 +5,8 @@ from apps.skills.serializers import SkillSerializer
 
 
 class SkillViewSet(viewsets.ModelViewSet):
+    queryset = Skill.objects.none()
+
     serializer_class = SkillSerializer
     permission_classes = [permissions.IsAuthenticated]
 

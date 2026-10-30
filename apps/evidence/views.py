@@ -5,6 +5,8 @@ from apps.evidence.serializers import EvidenceSerializer
 
 
 class EvidenceViewSet(viewsets.ModelViewSet):
+    queryset = Evidence.objects.none()
+
     serializer_class = EvidenceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
