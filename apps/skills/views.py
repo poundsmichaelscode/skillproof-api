@@ -1,3 +1,4 @@
+from config.pagination import StandardResultsPagination
 from rest_framework import permissions, viewsets
 
 from apps.skills.models import Skill
@@ -7,6 +8,7 @@ from apps.skills.serializers import SkillSerializer
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.none()
 
+    pagination_class = StandardResultsPagination
     serializer_class = SkillSerializer
     permission_classes = [permissions.IsAuthenticated]
 

@@ -57,9 +57,9 @@ class EvidenceAPITests(TestCase):
         response = self.client.get(self.list_url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data["results"]), 1)
         self.assertEqual(
-            response.data[0]["title"],
+            response.data["results"][0]["title"],
             "Python Project",
         )
 

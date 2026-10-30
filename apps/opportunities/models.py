@@ -25,6 +25,12 @@ class Opportunity(models.Model):
 
     class Meta:
         ordering = ["-created_at", "-id"]
+        indexes = [
+            models.Index(
+                fields=["-created_at", "-id"],
+                name="opportunity_recent_idx",
+            ),
+        ]
 
     def clean(self):
         super().clean()

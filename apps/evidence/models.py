@@ -27,6 +27,12 @@ class Evidence(models.Model):
 
     class Meta:
         ordering = ["-created_at", "-id"]
+        indexes = [
+            models.Index(
+                fields=["owner", "-created_at", "-id"],
+                name="evidence_owner_recent_idx",
+            ),
+        ]
 
     def clean(self):
         super().clean()

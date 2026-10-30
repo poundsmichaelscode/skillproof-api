@@ -46,9 +46,9 @@ class JWTSkillOwnershipTests(TestCase):
         response = self.client.get(self.list_url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data["results"]), 1)
         self.assertEqual(
-            response.data[0]["name"], "Python"
+            response.data["results"][0]["name"], "Python"
         )
 
     def test_user_cannot_view_another_users_skill(self):

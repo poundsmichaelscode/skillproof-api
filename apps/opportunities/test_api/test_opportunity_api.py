@@ -55,7 +55,7 @@ class OpportunityAPITests(TestCase):
         response = self.client.get(self.list_url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data["results"]), 1)
 
     def test_authenticated_user_can_read_another_users_opportunity(self):
         self.authenticate(self.other)
