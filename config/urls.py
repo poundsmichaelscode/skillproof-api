@@ -9,9 +9,15 @@ from drf_spectacular.views import (
 from django.contrib import admin
 from django.urls import include, path
 
-from config.views import health_check
+from config.views import health_check, readiness_check
 
 urlpatterns = [
+    path(
+        "api/v1/health/ready/",
+        readiness_check,
+        name="readiness-check",
+    ),
+
 
     path(
         "api/schema/",

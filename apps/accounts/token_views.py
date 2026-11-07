@@ -1,4 +1,4 @@
-from rest_framework.throttling import ScopedRateThrottle
+from apps.accounts.throttles import SafeScopedRateThrottle
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -7,10 +7,10 @@ from rest_framework_simplejwt.views import (
 
 
 class ThrottledTokenObtainPairView(TokenObtainPairView):
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [SafeScopedRateThrottle]
     throttle_scope = "auth_login"
 
 
 class ThrottledTokenRefreshView(TokenRefreshView):
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [SafeScopedRateThrottle]
     throttle_scope = "auth_refresh"

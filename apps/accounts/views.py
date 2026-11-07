@@ -1,4 +1,4 @@
-from rest_framework.throttling import ScopedRateThrottle
+from apps.accounts.throttles import SafeScopedRateThrottle
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
@@ -6,7 +6,7 @@ from apps.accounts.serializers import RegisterSerializer
 
 
 class RegisterView(generics.CreateAPIView):
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [SafeScopedRateThrottle]
     throttle_scope = "auth_register"
 
     serializer_class = RegisterSerializer
