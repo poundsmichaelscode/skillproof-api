@@ -13,3 +13,12 @@ reports
 *.log
 .DS_Store
 staticfiles/
+
+# Exclude database backups and temporary files
+*.dump
+*.sha256
+*.sql
+*.sql.gz
+*.backup
+backups/
+compose.yaml.week4-backup
