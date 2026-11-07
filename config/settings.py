@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "config.middleware.RequestLoggingMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -228,4 +229,29 @@ CACHES = {
         "TIMEOUT": 300,
         "KEY_PREFIX": "skillproof",
     }
+}
+
+
+# Week 4: JSON application request logs
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "config.logging.JSONFormatter",
+        },
+    },
+    "handlers": {
+        "request_console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+        },
+    },
+    "loggers": {
+        "skillproof.requests": {
+            "handlers": ["request_console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
 }
