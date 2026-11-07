@@ -210,3 +210,22 @@ CSRF_COOKIE_SECURE = HTTPS_ENABLED
 
 # Start with a short HSTS lifetime before increasing it.
 SECURE_HSTS_SECONDS = 3600 if HTTPS_ENABLED else 0
+
+
+# Week 4: Shared Redis cache for API throttling
+# Docker: redis://redis:6379/1
+# Mac host: redis://127.0.0.1:6380/1
+
+REDIS_URL = os.getenv(
+    "REDIS_URL",
+    "redis://127.0.0.1:6380/1",
+)
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": REDIS_URL,
+        "TIMEOUT": 300,
+        "KEY_PREFIX": "skillproof",
+    }
+}

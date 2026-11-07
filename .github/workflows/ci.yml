@@ -30,6 +30,16 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       DJANGO_SECRET_KEY: ci-only-test-secret-not-for-production
       DJANGO_DEBUG: "False"
@@ -39,6 +49,7 @@ jobs:
       POSTGRES_PASSWORD: ci-test-password
       DB_HOST: 127.0.0.1
       DB_PORT: "5432"
+      REDIS_URL: redis://127.0.0.1:6379/1
 
     steps:
       - name: Checkout repository
